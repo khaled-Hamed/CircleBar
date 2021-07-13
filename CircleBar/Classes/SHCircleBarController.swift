@@ -8,7 +8,12 @@
 
 import UIKit
 
-class SHCircleBarController: UITabBarController {
+public enum CircleCurrentLanguage {
+    case arabic
+    case english
+}
+
+open class SHCircleBarController: UITabBarController {
 
     fileprivate var shouldSelectOnTabBar = true
     private var circleView : UIView!
@@ -20,7 +25,24 @@ class SHCircleBarController: UITabBarController {
                 return
             }
             guard let tabBar = tabBar as? SHCircleBar, let index = viewControllers?.index(of: newValue) else {return}
-            tabBar.select(itemAt: index, animated: true)
+            if currentLanguage == .arabic {
+                if let viewControllers = viewControllers {
+                    let newIndex = ((viewControllers.count - 1) - index)
+                    tabBar.select(itemAt: newIndex, animated: true)
+                }else{
+                    tabBar.select(itemAt: index, animated: true)
+                }
+                
+            }else{
+                tabBar.select(itemAt: index, animated: true)
+            }
+            
+        }
+    }
+    
+    open var currentLanguage : CircleCurrentLanguage = .english  {
+        willSet {
+            self.currentLanguage = newValue
         }
     }
     
@@ -54,9 +76,13 @@ class SHCircleBarController: UITabBarController {
         
         circleView.addSubview(circleImageView)
         self.view.addSubview(circleView)
-        let tabWidth = self.view.bounds.width / CGFloat(self.tabBar.items?.count ?? 4)
         
-        circleView.frame = CGRect(x: tabWidth / 2 - 30, y: self.tabBar.frame.origin.y - 40, width: 60, height: 60)
+        let tabWidth = self.view.bounds.width / CGFloat(self.tabBar.items?.count ?? 4)
+        var xOfCircleView:Double  = (Double(tabWidth) * Double(2) - 30)
+        if currentLanguage == .english {
+            xOfCircleView = (Double(tabWidth) / Double(2) - 30)
+        }
+        circleView.frame = CGRect(x:CGFloat(xOfCircleView) , y: self.tabBar.frame.origin.y - 55, width: 60, height: 60)
         circleImageView.frame = self.circleView.bounds
     }
     open override func viewWillAppear(_ animated: Bool) {
@@ -101,8 +127,9 @@ class SHCircleBarController: UITabBarController {
     }
     
     open override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        guard let idx = tabBar.items?.index(of: item) else { return }
-        if  idx != selectedIndex, let controller = viewControllers?[idx] {
+        guard let tabBarItems = tabBar.items , let index = tabBarItems.index(of: item) else { return }
+        let idx = ((tabBarItems.count - 1) - index)
+        if  let controller = viewControllers?[idx] {
             shouldSelectOnTabBar = false
             selectedIndex = idx
             let tabWidth = self.view.bounds.width / CGFloat(self.tabBar.items!.count)
