@@ -58,6 +58,11 @@ open class SHCircleBarController: UITabBarController {
             tabBar.select(itemAt: selectedIndex, animated: true)
         }
     }
+    open var circleImageBackgroundColor : UIColor = .red  {
+        willSet {
+            self.circleImageBackgroundColor = newValue
+        }
+    }
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,12 +71,13 @@ open class SHCircleBarController: UITabBarController {
         
         self.circleView = UIView(frame: .zero)
         circleView.layer.cornerRadius = 30
-        circleView.backgroundColor = .white
+        circleView.backgroundColor = circleImageBackgroundColor
         circleView.isUserInteractionEnabled = false
         
         self.circleImageView = UIImageView(frame: .zero)
         circleImageView.layer.cornerRadius = 30
         circleImageView.isUserInteractionEnabled = false
+        circleImageView.backgroundColor = .clear
         circleImageView.contentMode = .center
         
         circleView.addSubview(circleImageView)
